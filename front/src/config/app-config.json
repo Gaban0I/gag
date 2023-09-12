@@ -1,0 +1,5 @@
+{
+  "stsServer": "https://idg-dev.cnp.fr/idg/oauth2/realms/root/realms/employes",
+  "redirect_url": "http://localhost:4200",
+  "idg_client_id": "gag-front-developpement-qU7ayyuw1Va4aG5NHn0gekxdiCpYEqTGtmqqFrFU"
+}

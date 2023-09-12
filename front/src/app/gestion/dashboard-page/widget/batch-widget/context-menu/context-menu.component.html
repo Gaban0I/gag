@@ -1,0 +1,19 @@
+<ul
+  class="context-menu"
+  [ngStyle]="{
+    top: position.top + 'px',
+    left: position.left + 'px',
+    display: visible ? 'block' : 'none'
+  }"
+>
+  <ng-container *ngIf="items">
+    <li
+      *ngFor="let item of items"
+      tabindex="0"
+      (click)="onMenuItemClick(item)"
+      (keypress.enter)="onMenuItemClick(item)"
+    >
+      {{ item.name }}
+    </li>
+  </ng-container>
+</ul>

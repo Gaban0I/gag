@@ -1,0 +1,18 @@
+- hosts: middle
+
+  vars_files:   
+    - "{{ANSIBLE_DIR}}/common/vars/globals.yml"
+    - "{{ANSIBLE_DIR}}/common/vars/cafe2022.2211.yml"
+    - "vars/globals.yml"
+    - "{{WORKDIR_VARS}}/vars/{{couloir}}.yml"
+
+  roles:
+    - "{{ANSIBLE_DIR}}/roles/tomcat"
+    - "{{ANSIBLE_DIR}}/roles/xldeploy_tomcat"
+    - role: "{{ANSIBLE_DIR}}/roles/load_dict"
+      load_dict_xxx: true
+    - role: idg_client_id
+      when: environment_type != 'vfg'
+      idg_app_grant_type: client_credentials
+      idg_app_realm: cnptech
+    - role: api_deck_consumers

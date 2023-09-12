@@ -1,0 +1,36 @@
+@import "colors.scss";
+
+#lockedBatchContainer {
+  height: 50px;
+  border-bottom: 2px $gris-froid solid;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  background-color: $blanc;
+  transition: background-color 0.5s;
+  &:hover,
+  &.active {
+    background-color: $gris-froid !important;
+  }
+  &:hover,
+  & > *:hover,
+  & > * > *:hover {
+    cursor: pointer !important;
+  }
+}
+.isFirst {
+  border-top: 2px $gris-froid solid;
+}
+
+#lockedBatchName {
+  padding-left: 20px;
+  font-size: small;
+  font-weight: 500;
+}
+
+#lockedBatchInfo {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  font-size: x-small;
+}

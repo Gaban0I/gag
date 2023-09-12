@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- version minimale de maven -->
+	<prerequisites>
+		<maven>3.6.0</maven>
+	</prerequisites>
+
+	<parent>
+		<groupId>fr.cnp.stj</groupId>
+		<artifactId>stj-release</artifactId>
+		<version>2022.1</version>
+	</parent>
+
+	<groupId>fr.cnp.gag</groupId>
+	<artifactId>gag</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>gag</name>
+	<description>gestion et administration de la ged - module parent</description>
+
+	<modules>
+		<module>front</module>
+		<module>jee</module>
+		<module>livrables</module>
+	</modules>
+
+	<!-- Organization -->
+	<organization>
+		<name>CNP</name>
+		<url>https://www.cnp.fr</url>
+	</organization>
+
+	<!-- Distribution Management -->
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>Référentiel releases</name>
+			<url>${NEXUS_REPOSITORY_URL}/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<name>Référentiel snapshots</name>
+			<url>${NEXUS_REPOSITORY_URL}/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<!-- SCM -->
+	<scm>
+		<connection>scm:git:ssh://git@${GITLAB_HOST}/devl_gag/gag.git</connection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<properties>
+		<!-- version AAI -->
+		<aai.version>2.49.0</aai.version>
+
+		<!-- on exclu de l'analyse sonar les librairies javascript externes utilisées -->
+		<sonar.exclusions>**/src/main/webapp/lib/**</sonar.exclusions>
+		<swagger-codegen-maven-plugin.version.v3>3.0.18</swagger-codegen-maven-plugin.version.v3>
+
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.tomcat.maven</groupId> <artifactId>tomcat8-maven-plugin</artifactId> 
+				<version>2.2</version> </plugin> -->
+			<plugin>
+				<groupId>ro.isdc.wro4j</groupId>
+				<artifactId>wro4j-maven-plugin</artifactId>
+				<version>${wro4j.version}</version>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

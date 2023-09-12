@@ -1,0 +1,61 @@
+@import "colors.scss";
+.loader {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+
+  .dot {
+    margin-right: 10px;
+    width: 12px;
+    height: 12px;
+    background: $bleu-lavande;
+    border-radius: 50%;
+  }
+
+  .dot1 {
+    -webkit-animation: dot-jump 0.5s cubic-bezier(0.77, 0.47, 0.64, 0.28)
+      alternate infinite;
+    animation: dot-jump 0.5s cubic-bezier(0.77, 0.47, 0.64, 0.28) alternate
+      infinite;
+  }
+
+  .dot2 {
+    -webkit-animation: dot-jump 0.5s 0.2s cubic-bezier(0.77, 0.47, 0.64, 0.28)
+      alternate infinite;
+    animation: dot-jump 0.5s 0.2s cubic-bezier(0.77, 0.47, 0.64, 0.28) alternate
+      infinite;
+  }
+
+  .dot3 {
+    -webkit-animation: dot-jump 0.5s 0.4s cubic-bezier(0.77, 0.47, 0.64, 0.28)
+      alternate infinite;
+    animation: dot-jump 0.5s 0.4s cubic-bezier(0.77, 0.47, 0.64, 0.28) alternate
+      infinite;
+  }
+
+  @-webkit-keyframes dot-jump {
+    0% {
+      -webkit-transform: translateY(0);
+      transform: translateY(0);
+    }
+    100% {
+      -webkit-transform: translateY(-15px);
+      transform: translateY(-15px);
+    }
+  }
+
+  @keyframes dot-jump {
+    0% {
+      -webkit-transform: translateY(0);
+      transform: translateY(0);
+    }
+    100% {
+      -webkit-transform: translateY(-15px);
+      transform: translateY(-15px);
+    }
+  }
+}

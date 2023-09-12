@@ -1,0 +1,17 @@
+@import "colors.scss";
+
+div:nth-child(1) {
+  background-color: $bleu-lavande-étendu;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.widget-container {
+  background-color: $bleu-lavande-étendu;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  flex: 1;
+}

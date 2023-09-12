@@ -1,0 +1,13 @@
+- hosts: front
+  serial: 1
+  vars_files:
+    - "{{ANSIBLE_DIR}}/common/vars/globals.yml"
+    - "{{ANSIBLE_DIR}}/common/vars/cafe2022.yml"
+    - "vars/globals.yml"
+  roles:
+    - role: load_dict
+      vars:
+        idg_app_postLogoutRedirectUri: "{{gag_front_url}}"
+        idg_app_redirectionUris: "{{gag_front_url}}"
+    - "{{ANSIBLE_DIR}}/roles/httpd"
+    - "{{ANSIBLE_DIR}}/roles/xldeploy_httpd"

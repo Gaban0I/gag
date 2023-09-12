@@ -1,0 +1,965 @@
+openapi: 3.0.0
+x-headmatter:
+  readable_by:
+    - interne
+info:
+  contact:
+    name: Equipe GED
+    email: fabrice.aubin@cnp.fr
+  version: "2.0"
+  title: Gestion de documents
+  description: API du domaine fonctionnel de gestion des documents.
+security:
+  - IDGOAuth2: []
+paths:
+  "/document/v2/private/documents/{documentId}/complete-data":
+    get:
+      description: Accès à un document (le document binaire plus les méta-données
+        publiques ET privées) à partir de son identifiant logique
+      parameters:
+        - name: documentId
+          in: path
+          description: Identifiant Logique du document
+          required: true
+          schema:
+            type: string
+        - name: thumbnail
+          in: query
+          description: Permet d'indiquer si la vignette doit être retournée (false si non renseigné).
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/documentComplet_r"
+        "404":
+          description: Document non trouvé
+  "/document/v2/private/documents/{documentId}/private-data":
+    put:
+      description: Modifier les données privées (visibilité / validité / codeRoutage)
+        d'un document
+      parameters:
+        - name: documentId
+          in: path
+          description: Identifiant logique du document
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/privateDataModification_c"
+        description: Données privées modifiables
+        required: true
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Document non trouvé
+  "/document/v2/private/documents/{documentId}":
+    delete:
+      description: Effectue la suppression logique du document
+      parameters:
+        - name: documentId
+          in: path
+          description: Identifiant logique du document
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/error"
+        "404":
+          description: Document non trouvé
+  "/document/v2/private/documents/{documentId}/document-file":
+    delete:
+      description: Effectue la suppression physique du document binaire qui ne peut
+        être retrouvé après
+      parameters:
+        - name: documentId
+          in: path
+          description: Identifiant logique du document
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/error"
+        "404":
+          description: Document non trouvé
+  "/document/v2/private/scheduledTasks/{taskId}/execute":
+    get:
+      description: effectue l’action planifiée d’identifiant taskId
+      parameters:
+        - name: taskId
+          in: path
+          description: Identifiant logique de l’action planifiée
+          required: true
+          schema:
+            type: long
+        - name: domain
+          in: query
+          description: Permet d'indiquer le domain lié à l'action planifiée pour trouver la FID correspondante (si non renseigné, la FID transverse est utilisée)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK.
+        "400":
+          description: Bad Request.
+        "404":
+          description: acion planifiée non trouvée.
+        "500":
+          description: Internal Server Error.
+          
+servers:
+  - url: https://devcol.cnp.fr/document/v2/private/documents
+components:
+  securitySchemes:
+    IDGOAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://idg-dev.cnp.fr/idg/oauth2/realms/root/realms/cnptech/access_token
+          scopes:
+            document.collective_insurance.loan_insurance.read: scope lecture domaine assurance emprunteur
+            document.collective_insurance.loan_insurance.write: scope écriture domaine assurance emprunteur
+            document.collective_insurance.loan_insurance.delete: scope suppression domaine assurance emprunteur
+            document.collective_insurance.loan_insurance_claim.read: scope lecture domaine assurance emprunteur
+            document.collective_insurance.loan_insurance_claim.write: scope écriture domaine assurance emprunteur
+            document.collective_insurance.loan_insurance_claim.delete: scope suppression domaine assurance emprunteur
+            document.collective_insurance.retirement.read: scope lecture domaine retraite
+            document.collective_insurance.retirement.write: scope écriture domaine retraite
+            document.collective_insurance.retirement.delete: scope suppression domaine retraite
+            document.collective_insurance.social_protection.read: scope lecture domaine protection sociale
+            document.collective_insurance.social_protection.write: scope écriture domaine protection sociale
+            document.collective_insurance.social_protection.delete: scope suppression domaine protection sociale
+            document.medical.read: scope lecture domaine médical
+            document.medical.write: scope écriture domaine médical
+            document.medical.delete: scope suppression domaine médical
+            document.personal_insurance.ametis.read: scope lecture domaine ametis
+            document.personal_insurance.ametis.write: scope écriture domaine ametis
+            document.personal_insurance.ametis.delete: scope suppression domaine ametis
+            document.personal_insurance.caisse_epargne.read: scope lecture domaine caisse d’épargne
+            document.personal_insurance.caisse_epargne.write: scope écriture domaine caisse d’épargne
+            document.personal_insurance.caisse_epargne.delete: scope suppression domaine caisse d’épargne
+            document.personal_insurance.la_banque_postale.read: scope lecture domaine la banque postale
+            document.personal_insurance.la_banque_postale.write: scope écriture domaine la banque postale
+            document.personal_insurance.la_banque_postale.delete: scope suppression domaine la banque postale
+  schemas:
+    document_r:
+      type: object
+      description: Objet agrégeant les informations associées au document
+        (caractéristiques, référence, identifiant) et le fichier ou document en
+        binaire
+      properties:
+        description:
+          $ref: "#/components/schemas/documentDescription_r"
+        documentFile:
+          type: string
+          description: Le document binaire (encodé en base 64)
+          format: byte
+    documentDescription_r:
+      type: object
+      description: Objet agrégeant les informations associées au document
+        (caractéristiques, référence, identifiant)
+      properties:
+        documentId:
+          type: string
+          description: Identifiant logique du document
+        injectionDate:
+          type: string
+          description: Date à laquelle le document a été injecté dans le domaine de
+            gestion des documents (Format yyyy-mm-dd)
+        deletionDate:
+          type: string
+          description: Date à laquelle le document a été supprimé physiquement du domaine
+            (Format yyyy-mm-dd)
+        logicalDeletionDate:
+          type: string
+          description: Date à laquelle le document a été supprimé logiquement. On peut le
+            restaurer
+        filename:
+          type: string
+          description: Nom du fichier correspondant au document
+        size:
+          type: integer
+          description: Taille en octet du document binaire (int32 max)
+        numberOfPages:
+          type: integer
+          description: Nombre de pages que contient le document
+        isEncrypted:
+          type: boolean
+          description: Indique si le document binaire est crypté ou non par le domaine GED
+        isConsumerEncrypted:
+          type: boolean
+          description: Indique si  le consommateur du domaine a chiffré son document
+        archivedDate:
+          type: string
+          description: Date à laquelle le document sera rangé sur un support d’archive
+            (Format yyyy-mm-dd)
+        paperFormId:
+          type: string
+          description: Identifiant externe opaque liant le document électronique à son
+            correspondant papier
+        isMultipleNetwork:
+          type: boolean
+          description: Indique que ce document concerne plusieurs réseaux
+        userInjectorId:
+          type: string
+          description: Identifiant de l'utilisateur ayant injecté manuellement le document dans le domaine.  (sera supprimé dans une prochaine version)
+        author:
+          type: string
+          description: Identifiant de l'utilisateur ayant injecté manuellement le document
+            dans le domaine.
+        consumingApplication:
+          type: string
+          description: Identifiant de l’application ayant effectué l'appel d'injection du document dans le domaine.
+            dans le domaine.
+        originApplication:
+          type: string
+          description: Identifiant de l’application d’origine. Sert lorsque l’application appelante n’est pas l’application à l’origine de l’appel.
+        comments:
+          type: string
+          description: Champs optionnel de commentaires libres
+        isSigned:
+          type: boolean
+          description: Indique si le document est signé
+        signatureDate:
+          type: string
+          description: Date à laquelle le document a été signé (Format yyyy-mm-dd)
+        domain:
+          type: string
+          description: domaine auquel appartient le document<ul><li>medical</li><li>collective_insurance.loan_insurance</li><li>collective_insurance.loan_insurance_claim</li><li>collective_insurance.social_protection</li><li>collective_insurance.retirement</li><li>personal_insurance.ametis</li><li>personal_insurance.caisse_epargne</li><li>personal_insurance.la_banque_postale</li><li>...</li></ul>
+        references:
+          type: array
+          description: Liste des références vers les entités métiers (Customer, Contract,
+            etc.) associées à ce document
+          items:
+            $ref: "#/components/schemas/businessEntityReference"
+        specificMetaDatas:
+          type: array
+          description: Liste de données spécifiques ajoutées à ce document
+          items:
+            $ref: "#/components/schemas/specificMetaData"
+        type:
+          $ref: "#/components/schemas/enumDocumentType"
+        direction:
+          $ref: "#/components/schemas/enumDirectionType"
+        mimeType:
+          $ref: "#/components/schemas/enumMimeType"
+        networkCode:
+          $ref: "#/components/schemas/enumNetworkCodeType"
+        sensitivity:
+          $ref: "#/components/schemas/enumSensitivityType"
+        status:
+          $ref: "#/components/schemas/enumDocumentStatusType"
+        outgoingPart:
+          $ref: "#/components/schemas/outgoingDocumentPartDescription"
+        incomingPart:
+          $ref: "#/components/schemas/incomingDocumentPartDescription"
+        thumbnail:
+          $ref: "#/components/schemas/thumbnail"
+        annotation:
+          type: boolean
+          description: Indique si le document contient une annotation
+    outgoingDocumentPartDescription:
+      type: object
+      description: Structure de données complémentaire pour les métadonnées propres
+        aux documents sortants.
+      properties:
+        userInjectorId:
+          type: string
+          description: Identifiant de l'utilisateur ayant injecté manuellement le document
+            dans le domaine.
+        templateId:
+          type: string
+          description: Référence opaque à la maquette qui a été utilisée pour produire ce
+            document par l’éditique.
+        editionDate:
+          type: string
+          description: Date à laquelle ce document a été produit par l’éditique. (Format
+            yyyy-mm-dd)
+        transmissionDate:
+          type: string
+          description: Date de transmission du document au client
+        transmissionState:
+          $ref: "#/components/schemas/enumTransmissionStateType"
+        transmissionChannel:
+          $ref: "#/components/schemas/enumTransmissionChannelType"
+        refAsiles:
+          type: array
+          description: Liste des références Asiles à associer au document poour les
+            glisser dans le même pli.
+          items:
+            type: string
+    incomingDocumentPartDescription:
+      type: object
+      description: Structure de données complémentaire pour les métadonnées propres
+        aux documents entrants
+      properties:
+        userInjectorId:
+          type: string
+          description: Identifiant de l'utilisateur ayant injecté manuellement le document
+            dans le domaine.
+        acquisitionDate:
+          type: string
+          description: Date à laquelle ce document entrant est considéré comme connu du SI
+            CNP.(Format yyyy-mm-dd)
+        scanDate:
+          type: string
+          description: Date à laquelle ce document a été numérisé s’il a été acquis via un
+            support papier.(Format yyyy-mm-dd)
+        scanId:
+          type: string
+          description: Référence opaque au lot de numérisation dont est issue la forme
+            numérisée (fichier binaire) du document.
+        acquisitionChannel:
+          $ref: "#/components/schemas/enumAcquisitionChannelType"
+    documentInjection_c:
+      type: object
+      description: Objet agrégeant les données nécessaires à la création d'un document
+        (métadonnées + document binaire)
+      properties:
+        domain:
+          type: string
+          description: domaine auquel appartient le document<ul><li>medical</li><li>collective_insurance.loan_insurance</li><li>collective_insurance.loan_insurance_claim</li><li>collective_insurance.social_protection</li><li>collective_insurance.retirement</li><li>personal_insurance.ametis</li><li>personal_insurance.caisse_epargne</li><li>personal_insurance.la_banque_postale</li><li>...</li></ul>
+        documentFile:
+          type: string
+          description: le document binaire (encodé en base 64)
+          format: byte
+        filename:
+          type: string
+          description: Nom du fichier correspondant au document binaire
+        size:
+          type: integer
+          description: Taille en octet du document binaire (int32 max)
+        numberOfPages:
+          type: integer
+          description: Nombre de pages que contient le document
+        isEncrypted:
+          type: boolean
+          description: Indique si le document binaire doit être chiffré
+        isConsumerEncrypted:
+          type: boolean
+          description: Indique si le document binaire a été chiffré par le consommateur
+        archivedDelay:
+          type: integer
+          description: Nombre de mois de délai avant archivage du document par rapport à
+            la date d'injection
+        paperFormId:
+          type: string
+          description: Identifiant externe opaque liant le document électronique à son correspondant papier
+        isMultipleNetwork:
+          type: boolean
+          description: Indique que ce document concerne plusieurs réseaux
+        injectionDate:
+          type: string
+          description: Date à laquelle le document a été injecté dans le domaine de
+            gestion des documents (Format yyyy-mm-dd)
+        userInjectorId:
+          type: string
+          description: Identifiant de l'utilisateur ayant injecté manuellement le document
+            dans le domaine.
+        comments:
+          type: string
+          description: Champs optionnel de commentaires libres
+        isToNotify:
+          type: boolean
+          description: Indique l'insertion de ce document doit déclencher une notification
+        notificationEmail:
+          type: string
+          description: Email à utiliser pour la notification
+        isWithoutReference:
+          type: boolean
+          description: Indique si le document ne contient pas de référence métier
+        isSigned:
+          type: boolean
+          description: Indique si le document est signé. Si vrai, une signatureDate devra être positionnée (format aaaa−mm−qqThh:mi:ss) ; si fausse, signatureDate est interdite
+        signatureDate:
+          type: string
+          description: Date de signature du document (Format yyyy-mm-dd)
+        networkCode:
+          type: string
+          description: Code réseau à utiliser dans le cas d'un jeton multi-réseaux
+        originApplication:
+          type: string
+          description: Code de l'application à l'origine de l'appel. A utiliser lors d'une injection par une application tierce, par exemple ACM
+        type:
+          $ref: "#/components/schemas/enumDocumentType"
+        direction:
+          $ref: "#/components/schemas/enumDirectionType"
+        mimeType:
+          $ref: "#/components/schemas/enumMimeType"
+        sensitivity:
+          $ref: "#/components/schemas/enumSensitivityType"
+        outgoingPart:
+          $ref: "#/components/schemas/outgoingDocumentPartDescription"
+        incomingPart:
+          $ref: "#/components/schemas/incomingDocumentPartDescription"
+        references:
+          type: array
+          description: Liste des références vers les entités métiers (Customer, Contract,
+            etc.) associées à ce document
+          items:
+            $ref: "#/components/schemas/businessEntityReference"
+        specificMetaDatas:
+          type: array
+          description: Liste de données spécifiques ajoutées à ce document
+          items:
+            $ref: "#/components/schemas/specificMetaData"
+    bulkDocumentInjection_c:
+      type: object
+      description: Liste des documents injectés de manière asynchrone dans un packet
+      properties:
+        documents:
+          type: array
+          description: Données d'injection d'un document
+          items:
+            $ref: "#/components/schemas/documentInjection_c"
+    documentModification_c:
+      type: object
+      description: Objet agrégeant les données pouvant être modifiées dans la
+        description d'un document
+      properties:
+        documentId:
+          type: string
+          description: Identifiant logique du document
+        filename:
+          type: string
+          description: Nom du fichier correspondant au document
+        size:
+          type: integer
+          description: Taille en octet du document binaire (int32 max)
+        numberOfPages:
+          type: integer
+          description: Nombre de pages que contient le document
+        isEncrypted:
+          type: boolean
+          description: Indique si le document binaire doit être chiffré
+        isConsumerEncrypted:
+          type: boolean
+          description: Indique si le document binaire a été chiffré par le consommateur
+        archivedDate:
+          type: string
+          description: Date de l'archivage du document
+        paperFormId:
+          type: string
+          description: Identifiant externe opaque liant le document électronique à son correspondant papier
+        isMultipleNetwork:
+          type: boolean
+          description: Indique que ce document concerne plusieurs réseaux
+        userInjectorId:
+          type: string
+          description: Identifiant de l'utilisateur ayant injecté manuellement le document
+            dans le domaine.
+        comments:
+          type: string
+          description: Champs optionnel de commentaires libres
+        references:
+          type: array
+          description: Liste des références vers les entités métiers (Customer, Contract,
+            etc.) associées à ce document
+          items:
+            $ref: "#/components/schemas/businessEntityReference"
+        specificMetaDatas:
+          type: array
+          description: Liste de données spécifiques ajoutées à ce document
+          items:
+            $ref: "#/components/schemas/specificMetaData"
+        type:
+          $ref: "#/components/schemas/enumDocumentType"
+        mimeType:
+          $ref: "#/components/schemas/enumMimeType"
+        sensitivity:
+          $ref: "#/components/schemas/enumSensitivityType"
+        outgoingPart:
+          $ref: "#/components/schemas/outgoingDocumentPartDescription"
+        incomingPart:
+          $ref: "#/components/schemas/incomingDocumentPartDescription"
+    documentComplet_r:
+      type: object
+      description: Structure complète du document contenant les métadonnées publiques
+        et privées
+      properties:
+        documentFile:
+          type: string
+          description: Le document binaire (encodé en base 64)
+          format: byte
+        description:
+          $ref: "#/components/schemas/documentDescription_r"
+        packets:
+          type: array
+          description: Historique des états du lot ayant injecté ce document dans la GED
+          items:
+            $ref: "#/components/schemas/packetDescription_r"
+        privateData:
+          $ref: "#/components/schemas/privateData"
+        internals:
+          $ref: "#/components/schemas/internalMetadatas"
+    businessEntityReference:
+      type: object
+      description: Référence vers une entité métier du système d'information associé à
+        ce document (customer, contract, etc.)
+      properties:
+        type:
+          $ref: "#/components/schemas/enumBusinessEntityType"
+        reference:
+          type: string
+          description: Valeur de la référence dans le SI CNP
+    specificMetaData:
+      type: object
+      description: Métadonnée spécifique pour certains consommateurs du domaine GED
+      properties:
+        value:
+          type: string
+          description: Valeur de la métadonnée non typée et sérialisée sous forme de
+            chaîne de caractères.
+        type:
+          $ref: "#/components/schemas/enumSpecificMetaDataType"
+    packetDescription_r:
+      type: object
+      description: Regroupement de document produit lors d'un traitement par lot lors
+        duquel ce document a été édité ou numérisé
+      properties:
+        packetId:
+          type: string
+          description: Identifiant logique du packet au sein du domaine GED
+        externalId:
+          type: string
+          description: Identifiant externe du lot de numérisation ou d'édition
+        creationDate:
+          type: string
+          description: Date de création du lot
+        injectorId:
+          type: string
+          description: Identifiant du traitement d'injection
+        startDate:
+          type: string
+          description: Date de début de validité de ces données
+        endDate:
+          type: string
+          description: " date de fin de validité de ces données"
+        validity:
+          $ref: "#/components/schemas/enumDocumentValidityType"
+        visibility:
+          type: array
+          description: Liste des niveaux de visibilité autorisés à consulter ce document
+          items:
+            $ref: "#/components/schemas/enumVisibilityType"
+    packetCreation_c:
+      type: object
+      description: Ensemble des métadonnées nécessaires à la création d'un packet
+      properties:
+        externalId:
+          type: string
+          description: Identifiant externe du lot de numérisation ou d'édition
+        creationDate:
+          type: string
+          description: Date de création du lot
+        injectorId:
+          type: string
+          description: Identifiant du traitement d'injection
+        validity:
+          $ref: "#/components/schemas/enumDocumentValidityType"
+        visibility:
+          type: array
+          description: Liste des niveaux de visibilité autorisés à consulter ce document
+          items:
+            $ref: "#/components/schemas/enumVisibilityType"
+    packetModification_c:
+      type: object
+      description: Ensemble des métadonnées modifiables d'un lot
+      properties:
+        injectorId:
+          type: string
+          description: Identifiant du traitement d'injection
+        validity:
+          $ref: "#/components/schemas/enumDocumentValidityType"
+        visibility:
+          type: array
+          description: Liste des niveaux de visibilité autorisés à consulter ce document
+          items:
+            $ref: "#/components/schemas/enumVisibilityType"
+        locked:
+          type: boolean
+          description: Indique si un lot est vérouillé
+        lockComment:
+          type: string
+          description: Commentaire sur la raison d'un verrouillage/déverrouillage'
+    packetDocumentInjection_c:
+      type: object
+      description: Données d'injection d'un document lié à un packet
+      properties:
+        packetId:
+          type: string
+          description: Identifiant logique du packet au sein du domaine GED
+        document:
+          $ref: "#/components/schemas/documentInjection_c"
+    privateData:
+      type: object
+      description: Métadonnées privées d'un document (non accessibles des API publiques)
+      properties:
+        codeRoutage:
+          type: string
+          description: code interne nécessaire au fonctionnement de l'existant
+        validity:
+          $ref: "#/components/schemas/enumDocumentValidityType"
+        visibility:
+          type: array
+          description: liste des niveaux de visibilité autorisés à consulter ce document
+          items:
+            $ref: "#/components/schemas/enumVisibilityType"
+    privateDataModification_c:
+      type: object
+      description: Métadonnées privées d'un document (non accessibles des API publiques)
+      properties:
+        documentId:
+          type: string
+          description: Identifiant logique du document dont on modifie les données privées
+        codeRoutage:
+          type: string
+          description: code interne nécessaire au fonctionnement de l'existant
+    documentDuplication_c:
+      type: object
+      description: Données de duplication d'un document
+      properties:
+        filename:
+          type: string
+          description: Nom du fichier du duplicata
+        annotation:
+          type: boolean
+          description: Renseigner avec true si on veut dupliquer l’annotation du document, false sinon
+    internalMetadatas:
+      type: object
+      description: Metadonnées techniques à un document - non accessibles des API publiques
+      properties:
+        containerId:
+          type: string
+          description: Identifiant technique du conteneur dans lequel est stocké le document
+        technicalId:
+          type: string
+          description: Identifiant technique du document dans le conteneur
+    thumbnail:
+      type: object
+      description: Objet agrégeant la miniature encodée en Base64 ainsi que les informations associées
+      properties:
+        thumbnailFile:
+          type: string
+          description: Le document binaire (encodé en base 64)
+          format: byte
+        mimeType:
+          $ref: "#/components/schemas/enumMimeType"
+    enumBusinessEntityType:
+      type: object
+      description: |-
+        Type de l'entité métier associée à un document:
+         - CUSTOMER : client de la CNP ou du partenaire
+         - SUBSCRIPTION : Souscription
+         - CONTRACT : contrat
+         - BUSINESS_CASE : Affaire
+         - REPURCHASER_REQUEST : demande de rachat
+         - DEATH_BENEFICIARY : Bénéficiaire du décès
+         - DEATH_RECORD : dossier de décès
+         - LAURE_CONTRACT: contrat LAURE
+         - PARTNER_BUSINESS_CASE: Affaire partenaire
+         - BROKER: Apporteur
+      properties:
+        id:
+          description: Code de l'entité métier
+          type: string
+        explicitLabel:
+          description: Libellé de l'entité métier
+          type: string
+    enumSpecificMetaDataType:
+      type: object
+      description: |-
+        Nomenclature des types de metadata spécifiques
+         - DATE_REFERENCE
+         - DATE_SITUATION
+         - TYPE_AFFAIRE
+         - TYPE_AFFAIRE_DETAILLE
+         - TYPE_REFERENCE
+         - ...
+      properties:
+        id:
+          description: Code du type de méta données
+          type: string
+        explicitLabel:
+          description: Libellé du type de méta données
+          type: string
+    enumDocumentType:
+      type: object
+      description: |-
+        Nomenclature des types de document:
+         - AAE (Arrivée à l'échéance)
+         - ABD (Abondement)
+         - ...
+      properties:
+        id:
+          description: Code du type de document (AAE,etc.)
+          type: string
+        explicitLabel:
+          description: Libellé du type de document
+          type: string
+    enumDirectionType:
+      type: object
+      description: |-
+        Nomenclature indiquant quel sens d'échange à convoyer ce document du
+        point de vue du SI CNP:
+         - INCOMING : (Entrant) document fourni par le client 
+         - OUTGOING: (Sortant) document créé par la CNP ou un partenaire et envoyé vers le client
+      properties:
+        id:
+          description: Code du type de courrier
+          type: string
+        explicitLabel:
+          description: Libellé du type de courrier
+          type: string
+    enumMimeType:
+      type: object
+      description: |-
+        Nomenclature le type de format du document:
+         - application/epub+zip
+         - application/java-archive
+         - application/javascript
+         - application/json
+         - application/msword
+         - application/octet-stream
+         - application/octet-stream
+         - application/ogg
+         - application/pdf
+         - application/rtf
+         - application/typescript
+         - application/vnd.amazon.ebook
+         - application/vnd.apple.installer+xml
+         - application/vnd.mozilla.xul+xml
+         - application/vnd.ms-excel
+         - application/vnd.ms-fontobject
+         - application/vnd.ms-powerpoint
+         - application/vnd.oasis.opendocument.presentation
+         - application/vnd.oasis.opendocument.spreadsheet
+         - application/vnd.oasis.opendocument.text
+         - application/vnd.openxmlformats-officedocument.presentationml.presentation
+         - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+         - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+         - application/vnd.visio
+         - application/x-7z-compressed
+         - application/x-abiword
+         - application/x-bzip
+         - application/x-bzip2
+         - application/x-csh
+         - application/xhtml+xml
+         - application/xml
+         - application/x-rar-compressed
+         - application/x-sh
+         - application/x-shockwave-flash
+         - application/x-tar
+         - application/zip
+         - audio/3gpp dans le cas où le conteneur ne comprend pas de vidéo
+         - audio/3gpp2 dans le cas où le conteneur ne comprend pas de vidéo
+         - audio/aac
+         - audio/midi
+         - audio/midi
+         - audio/ogg
+         - audio/webm
+         - audio/x-wav
+         - font/otf
+         - font/ttf
+         - font/woff
+         - font/woff2
+         - image/bmp
+         - image/gif
+         - image/jpeg
+         - image/jpeg
+         - image/png
+         - image/svg+xml
+         - image/tiff
+         - image/tiff
+         - image/webp
+         - image/x-icon
+         - text/calendar
+         - text/css
+         - text/csv
+         - text/html
+         - text/html
+         - text/plain
+         - video/3gpp
+         - video/3gpp2
+         - video/mpeg
+         - video/ogg
+         - video/webm
+         - video/x-msvideo
+      properties:
+        id:
+          description: Code du type mime
+          type: string
+        explicitLabel:
+          description: Libellé du type mime
+          type: string
+    enumAcquisitionChannelType:
+      type: object
+      description: |-
+        Nomenclature du type de canal d'acquisition du document (document entrant):
+         - ADVISOR
+         - AGIRA
+         - Autre
+         - BACK-OFFICE
+         - BO
+         - CER
+         - CGP
+         - CLT
+         - CMA
+         - CNAH
+         - CSP
+         - CUSTOMER
+         - DC-LBP-FLOW
+         - DISTRIBUTOR
+         - EMAIL
+         - ESBPCE
+         - GEDLBP
+         - HSQ
+         - INVESTIGATION
+         - ITCE
+         - MC2
+         - NOT-SQA
+         - POSTAL-MAIL
+         - PUMA
+         - SQA
+         - TESSI
+         - WEB
+      properties:
+        id:
+          description: Code du canal d'acquisition
+          type: string
+        explicitLabel:
+          description: Libellé du canal d'acquisition
+          type: string
+    enumSensitivityType:
+      type: object
+      description: |-
+        Nomenclature de la sensibilité du document:
+         - ADMINISTRATIVE (niveau de sensibilité normal)
+         - SENSIBLE (niveau de sensibilité moyen)
+         - MEDICAL (niveau de sensibilité élevé propre à des documents portant des informations médicales )    
+      properties:
+        id:
+          description: Code du type de sensibilité
+          type: string
+        explicitLabel:
+          description: Libellé du type de sensibilité
+          type: string
+    enumNetworkCodeType:
+      type: object
+      description: |-
+        Indique le réseau de gestion du document
+         - CE
+         - LPB
+         - AMETIS
+      properties:
+        id:
+          description: Code du canal de distribution
+          type: string
+        explicitLabel:
+          description: Libellé du canal de distribution
+          type: string
+    enumDocumentStatusType:
+      type: object
+      description: |-
+        Nomenclature de l'état du document
+         - INJECTED
+         - DELETED_LOGICALLY
+         - DELETED
+         - ARCHIVED
+      properties:
+        id:
+          description: Code de l'état du document
+          type: string
+        explicitLabel:
+          description: Libellé de l'état du document
+          type: string
+    enumTransmissionStateType:
+      type: object
+      description: |-
+        Nomenclature de l'état de la transmission d'un document au client
+         - NON_DELIVERED (non transmis au client)
+         - DELIVERED (transmis au client)
+         - DEAD_LETTER (NPAI ou DND)
+      properties:
+        id:
+          description: Code de l'état de la transmission
+          type: string
+        explicitLabel:
+          description: Libellé de l'état de la transmission
+          type: string
+    enumTransmissionChannelType:
+      type: object
+      description: |-
+        Nomenclature du canal de la transmission d'un document au client
+         - CENTRALIZED_PRINTING Courrier papier imprimé en envoyé depuis le central
+         - LOCAL_PRINTING Courrier papier imprimé et transmis en local d'une agence
+         - DIGITAL Courrier dématérialisé transmis par mail
+      properties:
+        id:
+          description: Code du canal de transmission
+          type: string
+        explicitLabel:
+          description: Libellé du canal de transmission
+          type: string
+    enumDocumentValidityType:
+      type: object
+      description: |-
+        Nomenclature des types de validité d'un document
+         - VALID (valide sans erreur du point de vue du domaine GED)
+         - FAULTY (erroné)
+      properties:
+        id:
+          description: Code de validité
+          type: string
+        explicitLabel:
+          description: Libellé de validité
+          type: string
+    enumVisibilityType:
+      type: object
+      description: |-
+        Nomenclature de visibilité d'un document
+         - CUSTOMER (visible du client)
+         - NETWORK_AGENT (visible d'un agent partenaire)
+         - INTERNAL (visible des agents internes CNP)
+      properties:
+        id:
+          description: Code de visibilité
+          type: string
+        explicitLabel:
+          description: Libellé de visibilité
+          type: string
+    error:
+      type: object
+      description: Anomalie
+      properties:
+        errorCode:
+          type: string
+        error:
+          type: string
+        errorDetail:
+          type: string

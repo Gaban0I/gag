@@ -1,0 +1,26 @@
+@import "colors.scss";
+
+//! class widget et widget-title dans styles.scss
+
+.widget-title {
+  margin-bottom: 4% !important;
+}
+p {
+  font-size: 16px;
+  color: $gris-chaud-1;
+
+  a {
+    text-decoration: none;
+    color: $bleu-lavande;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .widget {
+    min-height: 0px !important;
+    height: auto !important;
+  }
+}

@@ -1,0 +1,28 @@
+@import "colors.scss";
+.context-menu {
+  position: absolute;
+  background-color: $blanc;
+  border: 2px solid $gris-froid;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  list-style-type: none;
+  padding: 5px 0;
+  margin: 0;
+  min-width: 200px;
+  z-index: 100;
+
+  li {
+    position: relative;
+    padding: 6px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    white-space: nowrap;
+    background-color: $blanc;
+    transition: background-color 0.5s;
+    &:hover {
+      background-color: $gris-froid-étendu;
+    }
+  }
+}

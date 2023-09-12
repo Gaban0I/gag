@@ -1,0 +1,15 @@
+<div style="position: relative">
+  <img
+    [src]="background_img"
+    alt="background"
+    class="cover"
+    [ngClass]="class_background"
+  />
+  <div id="error_container" [ngClass]="class_container">
+    <div id="error_message" [ngClass]="class_message">
+      <h1>Oops</h1>
+      <p>{{ message }}</p>
+    </div>
+    <h1 id="error_type">Erreur {{ type }}</h1>
+  </div>
+</div>

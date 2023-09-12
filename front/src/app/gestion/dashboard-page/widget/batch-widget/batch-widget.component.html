@@ -1,0 +1,51 @@
+<div id="batchWidget" class="widget">
+  <div id="lotsWidgetTitleContainer" #lotsWidgetTitleContainer>
+    <h3 id="lotsWidgetTitle" class="widget-title">Lots verrouillés</h3>
+    <p id="lockedBatchCounter">{{ lockedCounter }}</p>
+  </div>
+  <div id="lockedBatchsContainer" *ngIf="batchLocked.length > 0">
+    <ng-container
+      *ngFor="let item of batchLocked; let isFirst = first; let i = index"
+    >
+      <app-locked-batch
+        *ngIf="i < batchContainerNumber"
+        [attr.data-id]="item.idPacket"
+        [isFirst]="isFirst"
+        [data]="item"
+      ></app-locked-batch>
+    </ng-container>
+  </div>
+  <!-- bouton "afficher plus" qui renvois vers la page lots si il y a des lots vérouillés -->
+  <div id="moreButtonContainer" *ngIf="batchLocked.length > 0">
+    <p id="moreButton" routerLink="/gag/lots">Afficher plus</p>
+  </div>
+  <!-- texte qui s'affiche si pas de lots à déverouiller -->
+  <p id="noBatchText" *ngIf="batchLocked.length === 0">
+    Super, il n'y a actuellement aucun lot à déverrouiller
+  </p>
+  <!-- Fenêtre affiché au clique droit pour supprimer ou déverrouiller un lot -->
+  <app-context-menu
+    [visible]="contextMenuVisible"
+    [position]="contextMenuPosition"
+    [items]="[menuItemDelete, menuItemUnlock]"
+    (itemClick)="onMenuItemClick($event)"
+  ></app-context-menu>
+  <!-- Element de confirmation en cas de suppression -->
+  <!-- Element gris de fond -->
+  <div
+    tabindex="0"
+    *ngIf="showConfirmation"
+    class="confirmation-overlay"
+    (click)="cancelDelete()"
+    (keypress.escape)="cancelDelete()"
+  ></div>
+  <!-- Fenêtre de confirmation -->
+  <div class="confirmation-window" *ngIf="showConfirmation">
+    <p>Le lot contient un document précédemment consulté.</p>
+    <p>Souhaitez-vous la suppression du lot ?</p>
+    <div class="buttons-container">
+      <button (click)="deleteConfirmed()">Oui</button>
+      <button (click)="cancelDelete()">Annuler</button>
+    </div>
+  </div>
+</div>

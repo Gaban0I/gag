@@ -1,0 +1,93 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "@angular/material" as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$gag-front-primary: mat.define-palette(mat.$grey-palette);
+$gag-front-accent: mat.define-palette(mat.$indigo-palette, 800, A100, A400);
+$gag-front-grey: mat.define-palette(mat.$grey-palette);
+
+// The warn palette is optional (defaults to red).
+$gag-front-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$gag-front-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $gag-front-primary,
+      accent: $gag-front-accent,
+      warn: $gag-front-warn,
+      grey: $gag-front-grey,
+    ),
+  )
+);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($gag-front-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+@import "colors.scss";
+
+@font-face {
+  font-family: "rawline";
+  src: url("https://raw.githubusercontent.com/h-ibaldo/Raleway_Fixed_Numerals/master/css/rawline.css");
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+* {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: rawline;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.widget {
+  border: black 1px solid;
+  min-width: 300px;
+  width: 40vw;
+  height: 55vh;
+  background-color: $blanc;
+  padding: 4%;
+}
+
+.widget-title {
+  font-style: bold;
+  font-size: 16px;
+}
+
+@media screen and (max-width: 700px) {
+  .widget {
+    min-height: 80vw;
+    width: 80vw;
+    margin: 4%;
+  }
+
+  body {
+    overflow: auto;
+  }
+  img {
+    overflow: hidden;
+  }
+}

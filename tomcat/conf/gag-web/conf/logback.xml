@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+    <property name="LOGS_FOLDER" value="target/logs"/>
+    <property name="LOGS_MAX_FILES" value="10"/>
+    <property name="LOGS_MAX_SIZE" value="10MB"/>
+	<property name="LOGS_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-7.7thread] [%-5level] [%-40.40logger] - %M::%msg%n" />
+
+    <!-- =================================================================== -->
+    <!-- Appender -->
+    <!-- =================================================================== -->
+
+	<appender name="GAG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>${LOGS_PATTERN}</Pattern>
+		</encoder>
+	</appender>
+
+    <appender name="GAG_ROOT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_FOLDER}/gag.json.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <provider class="net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider"/>
+            <timeZone>Europe/Paris</timeZone>
+            <customFields>{"application":"GAG","environment":"{{ING_ENVIRONMENT}}","tier":"{{ING_TIER}}"}</customFields>
+        </encoder>
+        <!-- Rolling Policy : archivage automatique en fonction de la taille du fichier et du temps -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOGS_FOLDER}/gag-%d{yyyy-MM-dd-HH}-%i.log.gz</fileNamePattern>
+            <!-- each file should be at most 10MB, keep 10 days worth of history, but at most 10GB -->
+            <maxFileSize>${LOGS_MAX_SIZE}</maxFileSize>
+            <maxHistory>${LOGS_MAX_FILES}</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="GAG_CLIENT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_FOLDER}/gag_client.json.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <provider class="net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider"/>
+            <timeZone>Europe/Paris</timeZone>
+            <customFields>{"application":"GAG_CLIENT","environment":"{{ING_ENVIRONMENT}}","tier":"{{ING_TIER}}"}</customFields>
+        </encoder>
+        <!-- Rolling Policy : archivage automatique en fonction de la taille du fichier et du temps -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOGS_FOLDER}/gag_client-%d{yyyy-MM-dd-HH}-%i.log.gz</fileNamePattern>
+            <!-- each file should be at most 10MB, keep 10 days worth of history, but at most 10GB -->
+            <maxFileSize>${LOGS_MAX_SIZE}</maxFileSize>
+            <maxHistory>${LOGS_MAX_FILES}</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="GAG_REST" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_FOLDER}/gag_rest.json.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <provider class="net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider"/>
+            <timeZone>Europe/Paris</timeZone>
+            <customFields>{"application":"GAG_REST","environment":"{{ING_ENVIRONMENT}}","tier":"{{ING_TIER}}"}</customFields>
+        </encoder>
+        <!-- Rolling Policy : archivage automatique en fonction de la taille du fichier et du temps -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOGS_FOLDER}/gag_rest-%d{yyyy-MM-dd-HH}-%i.log.gz</fileNamePattern>
+            <!-- each file should be at most 10MB, keep 10 days worth of history, but at most 10GB -->
+            <maxFileSize>${LOGS_MAX_SIZE}</maxFileSize>
+            <maxHistory>${LOGS_MAX_FILES}</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+
+    <!-- =================================================================== -->
+    <!-- logger -->
+    <!-- =================================================================== -->
+    <root level="INFO">
+        <appender-ref ref="GAG_CONSOLE"/>
+        <appender-ref ref="GAG_ROOT"/>
+    </root>
+
+    <logger name="fr.cnp.gag" additivity="false" level="INFO">
+        <appender-ref ref="GAG_CONSOLE"/>
+        <appender-ref ref="GAG_ROOT"/>
+    </logger>
+
+    <logger name="client" level="INFO" additivity="false">
+        <appender-ref ref="GAG_CONSOLE"/>
+        <appender-ref ref="GAG_CLIENT"/>
+    </logger>
+
+    <logger name="rest" level="INFO" additivity="false">
+        <appender-ref ref="GAG_CONSOLE"/>
+        <appender-ref ref="GAG_REST"/>
+    </logger>
+    
+    <logger name="fr.cnp.aai.scl.security.idg.legacy.filter.JWTAuthorizationFilter" level="WARN" additivity="false">
+        <appender-ref ref="GAG_CONSOLE"/>
+        <appender-ref ref="GAG_REST"/>
+    </logger>
+
+</configuration>

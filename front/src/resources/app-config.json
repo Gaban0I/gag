@@ -1,0 +1,5 @@
+{
+  "stsServer": "{{idg_front_url_internet}}/idg/oauth2/realms/root/realms/employes",
+  "redirect_url": "{{gag_front_url}}",
+  "idg_client_id": "{{gag_front_idg_client_id}}"
+}

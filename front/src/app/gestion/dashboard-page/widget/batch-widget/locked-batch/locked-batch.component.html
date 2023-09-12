@@ -1,0 +1,9 @@
+<div id="lockedBatchContainer" [class.isFirst]="isFirst" tabindex="0">
+  <h3 id="lockedBatchName">{{ data["idPacket"] }}</h3>
+  <div id="lockedBatchInfo">
+    <p id="lockedBatchNetwork">Réseau - {{ network }}</p>
+    <p id="lockedBatchDate">
+      injecté le {{ data["startInjectionDate"] | date : "dd/MM/yyyy HH:mm:ss" }}
+    </p>
+  </div>
+</div>

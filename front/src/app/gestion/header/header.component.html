@@ -1,0 +1,51 @@
+<div class="header">
+  <div class="logo">
+    <img
+      tabindex="0"
+      [routerLink]="dashboardRight ? ['/gag/dashboard'] : ['/gag']"
+      [src]="imageUrl"
+      alt="logo"
+      id="logo"
+      (keydown.enter)="
+        dashboardRight
+          ? this.router.navigateByUrl('/gag/dashboard')
+          : this.router.navigateByUrl('/gag')
+      "
+    />
+
+    <h1
+      tabindex="0"
+      (keydown.enter)="
+        dashboardRight
+          ? this.router.navigateByUrl('/gag/dashboard')
+          : this.router.navigateByUrl('/gag')
+      "
+      [routerLink]="dashboardRight ? ['/gag/dashboard'] : ['/gag']"
+      id="titre"
+    >
+      Gestion et Administration de la GED
+    </h1>
+  </div>
+  <div
+    tabindex="0"
+    (keydown.enter)="this.router.navigateByUrl('/gag/dashboard')"
+    *ngIf="dashboardRight"
+    routerLink="/gag/dashboard"
+    routerLinkActive="focus"
+    class="button"
+    [id]="btn1Id"
+  >
+    {{ btn1Text }}
+  </div>
+  <div
+    tabindex="0"
+    (keydown.enter)="this.router.navigateByUrl('/gag/lots')"
+    *ngIf="lotsRight"
+    routerLink="/gag/lots"
+    routerLinkActive="focus"
+    class="button"
+    [id]="btn2Id"
+  >
+    {{ btn2Text }}
+  </div>
+</div>

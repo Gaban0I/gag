@@ -1,0 +1,40 @@
+info:
+  app:
+    codeApplication: {{ING_APPLICATION}}
+    name: Back GAG
+    description: Back de l'application de Gestion et Administration de la GED
+    environment: {{ING_ENVIRONMENT}}
+    tier: {{ING_TIER}}
+    version: ${project.version}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,mappings
+      base-path: /gag
+  info:
+    env:
+      enabled: true
+api:
+  front:
+    url: "{{api_middle_url}}"
+  document:
+    name: "{{api_document_name}}"
+spring:
+  security:
+      oauth2:
+        client:
+          registration:
+            idg:
+              client-id: "{{gag_middle_idg_client_id}}"
+              client-secret: "{{gag_middle_idg_client_secret}}"
+              client-authentication-method: post
+              authorization-grant-type: client_credentials
+              scope: 
+                - document.personal_insurance.caisse_epargne.read
+                - document.personal_insurance.caisse_epargne.write
+                - document.personal_insurance.caisse_epargne.delete
+          provider:
+            idg:
+              token-uri: "{{idg_front_url}}/idg/oauth2/realms/root/realms/cnptech/access_token"
+              user-info-authentication-method: form

@@ -1,0 +1,62 @@
+@import "colors.scss";
+
+.header {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  background-color: $bleu-marine;
+  color: $blanc;
+  font-size: 50%;
+  height: 40px;
+  width: 100%;
+
+  * {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .logo {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    * {
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    img {
+      height: 33px;
+    }
+    h1 {
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+
+  .button {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    height: 100%;
+    background-color: transparent;
+    padding: 0px 25px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.2s;
+    &:hover,
+    &:focus {
+      background-color: $bleu-lavande;
+    }
+  }
+  .focus {
+    background-color: $bleu-lavande;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  #titre {
+    display: none;
+  }
+}

@@ -1,0 +1,98 @@
+@import "colors.scss";
+
+//! class widget et widget-title dans styles.scss
+#batchWidget {
+  display: flex;
+  flex-flow: column;
+  #lotsWidgetTitleContainer {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-between;
+    width: fit-content;
+    margin-bottom: 10px;
+    #lockedBatchCounter {
+      min-width: 27px;
+      min-height: 27px;
+      color: $blanc;
+      background-color: $bleu-marine;
+      border-radius: 50px;
+      padding: 5px 8px;
+      margin-left: 10px;
+      text-align: center;
+      line-height: 1;
+    }
+  }
+  #lockedBatchsContainer {
+    overflow: hidden;
+  }
+  #moreButtonContainer {
+    flex: 1;
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    #moreButton {
+      color: $bleu-lavande;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+  #noBatchText {
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10;
+  }
+
+  .confirmation-window {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 2px solid $gris-froid;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    z-index: 11;
+
+    p {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid $gris-froid;
+
+      button {
+        width: 100px;
+        background-color: $blanc;
+        border: 2px solid $gris-froid;
+        cursor: pointer;
+        font-weight: 600;
+        color: #333;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.5s;
+        &:hover {
+          background-color: $gris-froid;
+        }
+      }
+    }
+  }
+}

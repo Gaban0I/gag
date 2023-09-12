@@ -1,0 +1,5 @@
+HTTPD_RELEASE_SITE_DIR: ""
+HTTPD_RELEASE_ROOT_DIR: ""
+HTTPD_DEFAULT_URL: "/"
+httpd_conf_site_template_dir: ""
+ignore_check_server: true   
